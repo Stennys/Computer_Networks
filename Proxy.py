@@ -1,6 +1,5 @@
 # Include the libraries for socket and system calls
 import socket 
-from socket import *
 import sys
 import os
 import argparse
@@ -21,12 +20,12 @@ proxyPort = int(args.port)
 try:
   # Create a server socket
   # ~~~~ INSERT CODE ~~~~
-  serverName = 'Test'
+  serverName = 'Proxy'
   # Create server name and port
   serverPort = 8080
 
   
-  serverSocket = socket(AF_INET,SOCK_STREAM)
+  serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 
   # ~~~~ END CODE INSERT ~~~~
   print ('Created socket')
@@ -138,7 +137,8 @@ while True:
     # Create a socket to connect to origin server
     # and store in originServerSocket
     # ~~~~ INSERT CODE ~~~~
-    originServerSocket = socket(AF_INET, SOCK_STREAM)
+    originServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # originServerSocket.connect((hostname,80))
 
 
 
@@ -161,7 +161,7 @@ while True:
       # originServerRequest is the first line in the request and
       # originServerRequestHeader is the second line in the request
       # ~~~~ INSERT CODE ~~~~
-      originServerRequest = f"GET {resource} HTTP/1.0"
+      originServerRequest = f"GET {resource} HTTP/1.1"
       originServerRequestHeader  = f"Host: {hostname}\r\nConnection: close"
       # ~~~~ END CODE INSERT ~~~~
 
@@ -188,7 +188,7 @@ while True:
 
       # Send the response to the client
       # ~~~~ INSERT CODE ~~~~
-      clientSocket.sendall(responce.encode())
+      clientSocket.sendall(responce)
       # ~~~~ END CODE INSERT ~~~~
 
       # Create a new file in the cache for the requested file.
@@ -200,7 +200,7 @@ while True:
 
       # Save origin server response in the cache file
       # ~~~~ INSERT CODE ~~~~
-      cacheFile.append(responce)
+      cacheFile.write(responce)
       # ~~~~ END CODE INSERT ~~~~
       cacheFile.close()
       print ('cache file closed')
