@@ -8,6 +8,9 @@ import re
 # 1MB buffer size
 BUFFER_SIZE = 1000000
 
+
+  
+
 # Get the IP address and Port number to use for this web proxy server
 parser = argparse.ArgumentParser()
 parser.add_argument('hostname', help='the IP Address Of Proxy Server')
@@ -126,6 +129,11 @@ while True:
     # ProxyServer finds a cache hit
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
+
+    #need to update URL if code is 301
+    
+
+
     clientSocket.sendall(cacheFile)
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
@@ -188,7 +196,63 @@ while True:
 
       # Send the response to the client
       # ~~~~ INSERT CODE ~~~~
+      
+            #moved permantly or found  codes
+      if '301' in responce.decode() or '302' in responce.decode():
+        print("CODE 301 or 302 detected")
+        # Get new location of string inside message
+        new_location = re.search(r'Location:\s*(\S+)', responce.decode())
+        if (new_location):
+          #take match out
+          new_location = new_location.group(1)
+          #for testing purposes
+          print(f"New location is {new_location}")
+
+          #Close server for later use of it
+          originServerSocket.close()
+        #301 says  The requested resource has been assigned a new permanent URI and any
+        #future references to this resource SHOULD use one of the returned
+        #URIs. 
+        #Change new location
+          new_uri = new_location
+
+          new_uri = re.sub('^(/?)http(s?)://', '', new_uri, count=1)
+
+          new_uri = new_uri.replace('/..', '')
+
+          new_parts = new_uri.split('/', 1)
+
+          new_hostname = new_parts[0]
+
+          new_resource = '/' + new_parts[1] if len(new_parts) > 1 else '/'
+
+          originServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+          #Now we try to connect to the rederect
+
+      
+        address = socket.gethostbyname(new_hostname)
+        originServerSocket.connect((address, 80))
+              
+              # Create new request for the redirected location
+        request = f"GET {new_resource} HTTP/1.1\r\nHost: {new_hostname}\r\nConnection: close\r\n\r\n"
+
+        originServerSocket.sendall(request.encode())
+              
+              # Get the new response t
+        responce = originServerSocket.recv(BUFFER_SIZE)
+              
+              # Update cache location to use original requested URL
+
+        cacheLocation = './' + hostname + resource
+
+        if cacheLocation.endswith('/'):
+                  
+          cacheLocation = cacheLocation + 'default'
+
+
       clientSocket.sendall(responce)
+
       # ~~~~ END CODE INSERT ~~~~
 
       # Create a new file in the cache for the requested file.
@@ -200,6 +264,12 @@ while True:
 
       # Save origin server response in the cache file
       # ~~~~ INSERT CODE ~~~~
+
+
+
+
+
+
       cacheFile.write(responce)
       # ~~~~ END CODE INSERT ~~~~
       cacheFile.close()
@@ -218,3 +288,8 @@ while True:
     clientSocket.close()
   except:
     print ('Failed to close client socket')
+
+
+
+    # Check for error code 301
+
