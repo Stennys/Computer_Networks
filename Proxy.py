@@ -130,10 +130,6 @@ while True:
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
 
-    #need to update URL if code is 301
-    
-
-
     clientSocket.sendall(cacheFile)
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
@@ -182,73 +178,65 @@ while True:
         print ('> ' + line)
 
       try:
-        originServerSocket.sendall(request.encode())
+          originServerSocket.sendall(request.encode())
       except socket.error:
-        print ('Forward request to origin failed')
-        sys.exit()
+          print('Forward request to origin failed')
+          sys.exit()
 
       print('Request sent to origin server\n')
 
       # Get the response from the origin server
-      # ~~~~ INSERT CODE ~~~~
       responce = originServerSocket.recv(BUFFER_SIZE)
-      # ~~~~ END CODE INSERT ~~~~
 
       # Send the response to the client
-      # ~~~~ INSERT CODE ~~~~
+      # moved permantly or found codes
+      # if '301' in responce.decode() or '302' in responce.decode():
+      #     print("CODE 301 or 302 detected")
+      #     # Get new location of string inside message
+      #     new_location = re.search(r'Location:\s*(\S+)', responce.decode())
+      #     if (new_location):
+      #         # take match out
+      #         new_location = new_location.group(1)
+      #         # for testing purposes
+      #         print(f"New location is {new_location}")
+
+      #         # Close server for later use of it
+      #         originServerSocket.close()
+              
+      #         # 301 says The requested resource has been assigned a new permanent URI and any
+      #         # future references to this resource SHOULD use one of the returned
+      #         # URIs. 
+      #         # Change new location
+      #         try:
+      #             new_uri = new_location
+      #             new_uri = re.sub('^(/?)http(s?)://', '', new_uri, count=1)
+      #             new_uri = new_uri.replace('/..', '')
+      #             new_parts = new_uri.split('/', 1)
+      #             new_hostname = new_parts[0]
+      #             new_resource = '/' + new_parts[1] if len(new_parts) > 1 else '/'
+
+      #             originServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+      #             # Now we try to connect to the rederect
+      #             address = socket.gethostbyname(new_hostname)
+      #             originServerSocket.connect((address, 80))
+                    
+      #             # Create new request for the redirected location
+      #             request = f"GET {new_resource} HTTP/1.1\r\nHost: {new_hostname}\r\nConnection: close\r\n\r\n"
+      #             originServerSocket.sendall(request.encode())
+                    
+      #             # Get the new response
+      #             responce = originServerSocket.recv(BUFFER_SIZE)
+                    
+      #             # Update cache location to use original requested URL
+      #             cacheLocation = './' + new_hostname + new_resource
+      #             if cacheLocation.endswith('/'):
+      #                 cacheLocation = cacheLocation + 'default'
+
+      #         except Exception as e:
+      #             print(f"Failed to follow redirect: {str(e)}")
+            
       
-            #moved permantly or found  codes
-      if '301' in responce.decode() or '302' in responce.decode():
-        print("CODE 301 or 302 detected")
-        # Get new location of string inside message
-        new_location = re.search(r'Location:\s*(\S+)', responce.decode())
-        if (new_location):
-          #take match out
-          new_location = new_location.group(1)
-          #for testing purposes
-          print(f"New location is {new_location}")
-
-          #Close server for later use of it
-          originServerSocket.close()
-        #301 says  The requested resource has been assigned a new permanent URI and any
-        #future references to this resource SHOULD use one of the returned
-        #URIs. 
-        #Change new location
-          new_uri = new_location
-
-          new_uri = re.sub('^(/?)http(s?)://', '', new_uri, count=1)
-
-          new_uri = new_uri.replace('/..', '')
-
-          new_parts = new_uri.split('/', 1)
-
-          new_hostname = new_parts[0]
-
-          new_resource = '/' + new_parts[1] if len(new_parts) > 1 else '/'
-
-          originServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-          #Now we try to connect to the rederect
-
-      
-        address = socket.gethostbyname(new_hostname)
-        originServerSocket.connect((address, 80))
-              
-              # Create new request for the redirected location
-        request = f"GET {new_resource} HTTP/1.1\r\nHost: {new_hostname}\r\nConnection: close\r\n\r\n"
-
-        originServerSocket.sendall(request.encode())
-              
-              # Get the new response t
-        responce = originServerSocket.recv(BUFFER_SIZE)
-              
-              # Update cache location to use original requested URL
-
-        cacheLocation = './' + hostname + resource
-
-        if cacheLocation.endswith('/'):
-                  
-          cacheLocation = cacheLocation + 'default'
 
 
       clientSocket.sendall(responce)
