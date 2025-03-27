@@ -132,6 +132,22 @@ while True:
     # Send back response to client 
      # ~~~~ INSERT CODE ~~~~
 
+     #need to check if cache is still fresh 
+    file_mtime = os.path.getmtime(cacheLocation)
+    print(time.time(), file_mtime)
+    #Current time is now expired
+    
+    if (time.time() - file_mtime > 3600):
+        print("Expired")
+
+        #now fetch recourse from origin.
+
+        continue
+
+
+
+
+
     clientSocket.sendall(cacheFile)
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
@@ -166,7 +182,7 @@ while True:
       # ~~~~ INSERT CODE ~~~~
       originServerRequest = f"GET {resource} HTTP/1.1"
       #Add max age in
-      originServerRequestHeader  = (f"Host: {hostname}\r\nConnection: close\r\n" f"Cache-Control: max-age=3600")
+      originServerRequestHeader  = (f"Host: {hostname}\r\nConnection: close\r\n"+"Cache-Control: max-age=3600")
       # ~~~~ END CODE INSERT ~~~~
       # Construct the request to send to the origin server
       request = originServerRequest + '\r\n' + originServerRequestHeader + '\r\n\r\n'
