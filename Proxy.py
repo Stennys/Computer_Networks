@@ -25,9 +25,9 @@ proxyPort = int(args.port)
 try:
   # Create a server socket
   # ~~~~ INSERT CODE ~~~~
-  serverName = 'Proxy'
+  serverName = proxyHost
   # Create server name and port
-  serverPort = 8080
+  serverPort = proxyPort
 
   
   serverSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -130,29 +130,38 @@ while True:
     print ('Cache hit! Loading from cache file: ' + cacheLocation)
     # ProxyServer finds a cache hit
     # Send back response to client 
+
      # ~~~~ INSERT CODE ~~~~
 
      #need to check if cache is still fresh 
     file_mtime = os.path.getmtime(cacheLocation)
-    print(time.time(), file_mtime)
-    #Current time is now expired
     
-    if (time.time() - file_mtime > 3600):
+    # print(''.join(cacheData))
+    print("Checking the time limit set in file") 
+    try:
+      cache_limit = (re.search(r'Cache-Control:.*?max-age=(\d+)', ''.join(cacheData))).group(1)
+    except AttributeError:
+      cache_limit = 3600
+
+    print("Checking to see if file expired\n")
+    if ((time.time() - file_mtime) > float(cache_limit)):
         print("Expired")
+        cacheFile.close()
 
         #now fetch recourse from origin.
+        raise Exception("Cache expired")
+    else:
+      print("Not expired sending to client")
+      # print(cacheData)
+      cacheToSend = (''.join(cacheData)).encode('utf-8')
+      clientSocket.sendall(cacheToSend)
+      # print("Cache sent to client closing socket")
 
-        continue
-
-
-
-
-
-    clientSocket.sendall(cacheFile)
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
     print ('Sent to the client:')
-    print ('> ' + cacheData)
+    # print ('> ' + cacheData)
+  
   except:
     # cache miss.  Get resource from origin server
     originServerSocket = None
@@ -218,7 +227,7 @@ while True:
       # Save origin server response in the cache file
       # ~~~~ INSERT CODE ~~~~
 
-      if not (re.search('HTTP/1.1 302', responce.decode())):
+      if not ((re.search('HTTP/1.1 302', responce.decode())) or (re.search('HTTP/1.1 301', responce.decode()))):
         cacheFile.write(responce)
       # ~~~~ END CODE INSERT ~~~~
       cacheFile.close()
