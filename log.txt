@@ -1,0 +1,41 @@
+commit e982046026e3f59e8595419862c085558a499276
+Author: Izak <go73yom@mytum.de>
+Date:   Fri Mar 28 15:04:22 2025 +1030
+
+    working cache with age limit plus fixed bug of constalty calling origin server
+
+commit 51d1bd9377663240dd771e87223c1b8ad4a0b51d
+Author: Izak <go73yom@mytum.de>
+Date:   Thu Mar 27 19:52:32 2025 +1030
+
+    Working max-age
+
+commit 62765c9a9af63964fdd9a332fad1a480d08ff54f
+Author: Izak <go73yom@mytum.de>
+Date:   Wed Mar 26 14:52:35 2025 +1030
+
+    working 301
+
+commit 37c09c4b9d807edb12429fef8aa89df8fd878fbc
+Author: Izak <go73yom@mytum.de>
+Date:   Tue Mar 25 11:21:00 2025 +1030
+
+    it was working before i just overthougt it
+
+commit e7f3508c1e492763e8e0d9ca77f8769bfce84e0e
+Author: Izak <go73yom@mytum.de>
+Date:   Tue Mar 25 09:02:50 2025 +1030
+
+    buggy error 301
+
+commit 01dc1c9c9b481e989c8852e175ee37756a4e286d
+Author: Izak <go73yom@mytum.de>
+Date:   Thu Mar 20 13:35:39 2025 +1030
+
+    Added working origin server
+
+commit 93c2a6c5c35de7d2e5734e14e34f47a5a8ea5409
+Author: Izak <go73yom@mytum.de>
+Date:   Sun Mar 16 18:16:50 2025 +1030
+
+    First attept origin server not functioning
